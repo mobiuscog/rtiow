@@ -3,42 +3,71 @@ mod ray;
 
 use macroquad::prelude::*;
 use vec3::{Colour, Point3, Vec3 as Vec3};
+use crate::ray::Ray;
 
 fn window_conf() -> Conf {
+    let aspect_ratio = 16. / 9.;
+    let window_width = 800;
+    let window_height = (window_width as f64 / aspect_ratio) as i32;
+
     Conf {
         window_title: "Raytracing In One Weekend".to_owned(),
         window_resizable: false,
+        window_width,
+        window_height,
         ..Default::default()
+    }
+}
+
+fn flip_texture_params() -> DrawTextureParams {
+    DrawTextureParams {
+        dest_size: None,
+        source: None,
+        rotation: 0.0,
+        flip_x: false,
+        flip_y: true,
+        pivot: None
     }
 }
 
 #[macroquad::main(window_conf)]
 async fn main() {
-    let w = screen_width() as usize;
-    let h = screen_height() as usize;
 
-    let mut image = Image::gen_image_color(w as u16, h as u16, BLACK);
+    let aspect_ratio = 16. / 9.;
+    let image_width = screen_width() as u32;
+    let image_height = screen_height() as u32;
+
+    let viewport_height = 2.0;
+    let viewport_width = aspect_ratio * viewport_height;
+    let focal_length = 1.;
+
+    let origin: Point3 = Default::default();
+    let horizontal = Vec3::new(viewport_width, 0., 0.);
+    let vertical = Vec3::new(0., viewport_height, 0.);
+    let lower_left_corner = origin - horizontal / 2.
+        - vertical / 2. - Vec3::new(0., 0., focal_length);
+
+
+    let mut image = Image::gen_image_color(image_width as u16, image_height as u16, BLACK);
     let texture = Texture2D::from_image(&image);
 
-    
+
     loop {
         clear_background(WHITE);
-        let w = image.width() as u32;
-        let h = image.height() as u32;
-
-        for y in 0..h {
-            for x in 0..w {
-               let colour: Colour = Vec3::new(
-                    x as f64 / (w - 1) as f64,
-                    y as f64 / (h - 1) as f64,
-                    0.25);
+        for y in (0..=image_height-1).rev() {
+            for x in 0..image_width {
+                let u = x as f64 / (image_width - 1) as f64;
+                let v = y as f64 / (image_height - 1) as f64;
+                let r = Ray::new(origin,
+                                 lower_left_corner + horizontal * u + vertical * v - origin);
+                let colour = r.colour();
                 image.set_pixel(x, y, colour.to_color());
             }
         }
 
         texture.update(&image);
 
-        draw_texture(texture, 0., 0., WHITE);
+        draw_texture_ex(texture, 0., 0., WHITE, flip_texture_params());
 
         next_frame().await
     }
