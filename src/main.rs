@@ -1,4 +1,8 @@
+mod vec3;
+mod ray;
+
 use macroquad::prelude::*;
+use vec3::{Colour, Point3, Vec3 as Vec3};
 
 fn window_conf() -> Conf {
     Conf {
@@ -19,21 +23,16 @@ async fn main() {
     
     loop {
         clear_background(WHITE);
-
         let w = image.width() as u32;
         let h = image.height() as u32;
 
         for y in 0..h {
             for x in 0..w {
-
-                let r = x as f64 / (w - 1) as f64;
-                let g = y as f64 / (h - 1) as f64;
-                let b = 0.25;
-
-                let ir = (255.999 * r) as u8;
-                let ig = (255.999 * g) as u8;
-                let ib = (255.999 * b) as u8;
-                image.set_pixel(x, y, Color::from_rgba(ir, ig, ib, 255));
+               let colour: Colour = Vec3::new(
+                    x as f64 / (w - 1) as f64,
+                    y as f64 / (h - 1) as f64,
+                    0.25);
+                image.set_pixel(x, y, colour.to_color());
             }
         }
 
