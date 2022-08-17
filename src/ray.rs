@@ -1,13 +1,13 @@
-use crate::{Vec3, Point3, Colour};
+use crate::{Colour, Point3, Vector3};
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Ray {
     origin: Point3,
-    direction: Vec3
+    direction: Vector3,
 }
 
 impl Ray {
-    pub fn new(origin: Point3, direction: Vec3) -> Self {
+    pub fn new(origin: Point3, direction: Vector3) -> Self {
         Self { origin, direction }
     }
 
@@ -15,7 +15,7 @@ impl Ray {
         self.origin
     }
 
-    pub fn direction(&self) -> Vec3 {
+    pub fn direction(&self) -> Vector3 {
         self.direction
     }
 
@@ -25,7 +25,7 @@ impl Ray {
 
     pub fn colour(&self) -> Colour {
         let unit_direction = self.direction().unit_vector();
-        let t = 0.5 * (unit_direction.y() + 1.);
-        Colour::new(1., 1., 1.) * (1. - t) + Colour::new(0.5, 0.7, 1.) * t
+        let t = (unit_direction.y() + 1.) * 0.5;
+        (1. - t) * Colour::new(1., 1., 1.) + t * Colour::new(0.5, 0.7, 1.)
     }
 }
