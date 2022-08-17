@@ -41,19 +41,17 @@ pub async fn run(aspect_ratio: f64) {
 
         texture.update(&image);
 
-        draw_texture_ex(texture, 0., 0., WHITE, flip_texture_params());
+        draw_texture_ex(
+            texture,
+            0.,
+            0.,
+            WHITE,
+            DrawTextureParams {
+                flip_y: true,
+                ..Default::default()
+            },
+        );
 
         next_frame().await
-    }
-}
-
-fn flip_texture_params() -> DrawTextureParams {
-    DrawTextureParams {
-        dest_size: None,
-        source: None,
-        rotation: 0.0,
-        flip_x: false,
-        flip_y: true,
-        pivot: None,
     }
 }
