@@ -34,12 +34,13 @@ pub async fn run(aspect_ratio: f64) {
     let camera_ref = Arc::new(camera);
 
     let cpu_cores = get_physical() as u32;
+    let mut launched_threads = vec![];
     for thread_id in 0..cpu_cores {
         let canvas_local = canvas_ref.clone();
         let world_local = world_ref.clone();
         let camera_local = camera_ref.clone();
 
-        let _ = thread::spawn(move || {
+        let thread_handle = thread::spawn(move || {
             let mut rng = thread_rng();
 
             let samples_per_pixel = 100u32;
@@ -62,12 +63,45 @@ pub async fn run(aspect_ratio: f64) {
                 }
             }
         });
+        launched_threads.push((thread_handle, true));
     }
 
+    let font_size = 32;
+    let rendering_text = "Tracing Rays...";
+    let text_dimensions = measure_text(rendering_text, None, font_size, 1.0);
+    let text_x = (screen_width() - text_dimensions.width) / 2.;
+    let text_y = (screen_height() - text_dimensions.height) / 2.;
+
+    let mut threads_running = true;
     loop {
         clear_background(WHITE);
-        canvas_ref.clone().lock().unwrap().render();
-        next_frame().await
+        canvas_ref.lock().unwrap().render();
+        if threads_running {
+            draw_rectangle(
+                text_x - 8.,
+                text_y - text_dimensions.height / 2. - 16.,
+                text_dimensions.width + 16.,
+                text_dimensions.height + 16.,
+                WHITE,
+            );
+            draw_text(rendering_text, text_x, text_y, font_size as f32, RED);
+        }
+        next_frame().await;
+        if threads_running {
+            let mut active_count = 0;
+            for thread_handle in launched_threads.iter_mut() {
+                if thread_handle.1 {
+                    if thread_handle.0.is_finished() {
+                        thread_handle.1 = false
+                    } else {
+                        active_count += 1;
+                    }
+                }
+            }
+            if active_count == 0 {
+                threads_running = false;
+            }
+        }
     }
 }
 
