@@ -1,7 +1,7 @@
 use macroquad::prelude::Color;
 use num_traits::NumCast;
 
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, Default)]
 pub struct Vector3 {
     x: f64,
     y: f64,
@@ -38,7 +38,7 @@ impl Vector3 {
         self.length_squared().sqrt()
     }
 
-    pub fn dot(&self, other: Self) -> f64 {
+    pub fn dot(&self, other: &Self) -> f64 {
         self.x * other.x + self.y * other.y + self.z * other.z
     }
 

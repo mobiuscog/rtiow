@@ -1,5 +1,6 @@
 mod canvas;
 mod ray;
+mod sphere;
 mod vector3;
 
 #[macro_use]
@@ -9,6 +10,7 @@ use macroquad::prelude::*;
 
 use canvas::Canvas;
 use ray::Ray;
+use sphere::Sphere;
 use vector3::{Colour, Point3, Vector3};
 
 pub async fn run(aspect_ratio: f64) {
@@ -24,6 +26,11 @@ pub async fn run(aspect_ratio: f64) {
 
     let mut canvas = Canvas::new();
 
+    let mut world: Vec<Box<dyn Hittable>> = vec![];
+    world.push(Box::new(Sphere::new(Point3::new(0, 0, -1), 0.5)));
+    world.push(Box::new(Sphere::new(Point3::new(0, -100.5, -1), 100)));
+    // world.add(make_shared<sphere>(point3(0,-100.5,-1), 100));
+
     loop {
         clear_background(WHITE);
         for y in (0..=canvas.height() - 1).rev() {
@@ -34,7 +41,7 @@ pub async fn run(aspect_ratio: f64) {
                     origin,
                     lower_left_corner + horizontal * u + vertical * v - origin,
                 );
-                let colour = r.colour();
+                let colour = r.colour(&world);
                 canvas.set_pixel(x, y, colour);
             }
         }
@@ -42,5 +49,46 @@ pub async fn run(aspect_ratio: f64) {
         canvas.render();
 
         next_frame().await
+    }
+}
+
+#[derive(Clone, Default)]
+pub struct Hit {
+    p: Point3,
+    normal: Vector3,
+    t: f64,
+    front_face: bool,
+}
+
+impl Hit {
+    fn set_face_normal(&mut self, r: &Ray, outward_normal: &Vector3) {
+        self.front_face = r.direction().dot(outward_normal) < 0.;
+        if self.front_face {
+            self.normal = outward_normal.to_owned();
+        } else {
+            self.normal = -outward_normal.to_owned();
+        }
+    }
+}
+
+pub trait Hittable {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, rec: &mut Hit) -> bool;
+}
+
+impl Hittable for Vec<Box<dyn Hittable>> {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, rec: &mut Hit) -> bool {
+        let mut temp_rec: Hit = Default::default();
+        let mut hit_anything = false;
+        let mut closest_so_far = t_max;
+
+        for object in self.iter() {
+            if object.hit(ray, t_min, closest_so_far, &mut temp_rec) {
+                hit_anything = true;
+                closest_so_far = temp_rec.t;
+                *rec = temp_rec.clone();
+            }
+        }
+
+        return hit_anything;
     }
 }
