@@ -44,3 +44,4 @@ pub async fn run(aspect_ratio: f64) {
         next_frame().await
     }
 }
+
