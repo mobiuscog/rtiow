@@ -24,14 +24,14 @@ impl Ray {
     }
 
     pub fn colour(&self) -> Colour {
-        let mut t = self.hit_sphere(&Point3::new(0., 0., -1.), 0.5);
+        let mut t = self.hit_sphere(&Point3::new(0, 0, -1), 0.5);
         if t > 0. {
-            let n = (self.at(t) - Vector3::new(0., 0., -1.)).unit_vector();
+            let n = (self.at(t) - Vector3::new(0, 0, -1)).unit_vector();
             return 0.5 * Colour::new(n.x() + 1., n.y() + 1., n.z() + 1.);
         }
         let unit_direction = self.direction().unit_vector();
         t = 0.5 * (unit_direction.y() + 1.);
-        (1. - t) * Colour::new(1., 1., 1.) + t * Colour::new(0.5, 0.7, 1.)
+        (1. - t) * Colour::new(1, 1, 1) + t * Colour::new(0.5, 0.7, 1)
     }
 
     fn hit_sphere(self, center: &Point3, radius: f64) -> f64 {

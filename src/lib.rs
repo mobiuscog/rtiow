@@ -17,10 +17,10 @@ pub async fn run(aspect_ratio: f64) {
     let focal_length = 1.;
 
     let origin: Point3 = Default::default();
-    let horizontal = Vector3::new(viewport_width, 0., 0.);
-    let vertical = Vector3::new(0., viewport_height, 0.);
+    let horizontal = Vector3::new(viewport_width, 0, 0);
+    let vertical = Vector3::new(0, viewport_height, 0);
     let lower_left_corner =
-        origin - horizontal / 2. - vertical / 2. - Vector3::new(0., 0., focal_length);
+        origin - horizontal / 2 - vertical / 2 - Vector3::new(0, 0, focal_length);
 
     let mut canvas = Canvas::new();
 
@@ -44,4 +44,3 @@ pub async fn run(aspect_ratio: f64) {
         next_frame().await
     }
 }
-

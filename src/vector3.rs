@@ -1,4 +1,5 @@
 use macroquad::prelude::Color;
+use num_traits::NumCast;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Vector3 {
@@ -11,8 +12,12 @@ pub type Point3 = Vector3;
 pub type Colour = Vector3;
 
 impl Vector3 {
-    pub fn new(x: f64, y: f64, z: f64) -> Self {
-        Self { x, y, z }
+    pub fn new<T: NumCast, U: NumCast, V: NumCast>(x: T, y: U, z: V) -> Self {
+        Self {
+            x: x.to_f64().unwrap(),
+            y: y.to_f64().unwrap(),
+            z: z.to_f64().unwrap(),
+        }
     }
 
     pub fn x(&self) -> f64 {
@@ -101,6 +106,14 @@ impl_op_ex!(*=|lhs: &mut Vector3, rhs: f64| {
         lhs.z *= rhs;
 });
 
+impl_op_ex_commutative!(*|lhs: &Vector3, rhs: u32| -> Vector3 {
+    Vector3 {
+        x: lhs.x * rhs as f64,
+        y: lhs.y * rhs as f64,
+        z: lhs.z * rhs as f64,
+    }
+});
+
 impl_op_ex_commutative!(/|lhs: &Vector3, rhs: f64| -> Vector3 {
     Vector3 {
         x: lhs.x / rhs,
@@ -113,6 +126,14 @@ impl_op_ex!(/=|lhs: &mut Vector3, rhs: f64| {
         lhs.x /= rhs;
         lhs.y /= rhs;
         lhs.z /= rhs;
+});
+
+impl_op_ex_commutative!(/|lhs: &Vector3, rhs: u32| -> Vector3 {
+    Vector3 {
+        x: lhs.x / rhs as f64,
+        y: lhs.y / rhs as f64,
+        z: lhs.z / rhs as f64,
+    }
 });
 
 impl std::ops::Neg for Vector3 {
