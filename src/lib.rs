@@ -1,12 +1,14 @@
-use crate::ray::Ray;
-
 mod canvas;
 mod ray;
 mod vector3;
 
+#[macro_use]
+extern crate auto_ops;
+
 use macroquad::prelude::*;
 
 use canvas::Canvas;
+use ray::Ray;
 use vector3::{Colour, Point3, Vector3};
 
 pub async fn run(aspect_ratio: f64) {

@@ -59,101 +59,61 @@ impl Vector3 {
     }
 }
 
-impl std::ops::Add<Self> for Vector3 {
-    type Output = Self;
-
-    fn add(self, other: Self) -> Self {
-        Self {
-            x: self.x + other.x,
-            y: self.y + other.y,
-            z: self.z + other.z,
-        }
+impl_op_ex!(+|lhs: &Vector3, rhs: &Vector3| -> Vector3 {
+    Vector3 {
+        x: lhs.x + rhs.x,
+        y: lhs.y + rhs.y,
+        z: lhs.z + rhs.z,
     }
-}
+});
 
-impl std::ops::AddAssign<Self> for Vector3 {
-    fn add_assign(&mut self, other: Self) {
-        self.x += other.x;
-        self.y += other.y;
-        self.z += other.z;
+impl_op_ex !( += |lhs: &mut Vector3, rhs: &Vector3| {
+        lhs.x += rhs.x;
+        lhs.y += rhs.y;
+        lhs.z += rhs.z;
+});
+
+impl_op_ex!(-|lhs: &Vector3, rhs: &Vector3| -> Vector3 {
+    Vector3 {
+        x: lhs.x - rhs.x,
+        y: lhs.y - rhs.y,
+        z: lhs.z - rhs.z,
     }
-}
+});
 
-impl std::ops::Sub<Self> for Vector3 {
-    type Output = Self;
+impl_op_ex!( -= |lhs: &mut Vector3, rhs: &Vector3| {
+        lhs.x -= rhs.x;
+        lhs.y -= rhs.y;
+        lhs.z -= rhs.z;
+});
 
-    fn sub(self, other: Self) -> Self {
-        Self {
-            x: self.x - other.x,
-            y: self.y - other.y,
-            z: self.z - other.z,
-        }
+impl_op_ex_commutative!(*|lhs: &Vector3, rhs: f64| -> Vector3 {
+    Vector3 {
+        x: lhs.x * rhs,
+        y: lhs.y * rhs,
+        z: lhs.z * rhs,
     }
-}
+});
 
-impl std::ops::SubAssign<Self> for Vector3 {
-    fn sub_assign(&mut self, other: Self) {
-        self.x -= other.x;
-        self.y -= other.y;
-        self.z -= other.z;
+impl_op_ex!(*=|lhs: &mut Vector3, rhs: f64| {
+        lhs.x *= rhs;
+        lhs.y *= rhs;
+        lhs.z *= rhs;
+});
+
+impl_op_ex_commutative!(/|lhs: &Vector3, rhs: f64| -> Vector3 {
+    Vector3 {
+        x: lhs.x / rhs,
+        y: lhs.y / rhs,
+        z: lhs.z / rhs,
     }
-}
+});
 
-impl std::ops::Mul<f64> for Vector3 {
-    type Output = Self;
-
-    fn mul(self, other: f64) -> Self {
-        Self {
-            x: self.x * other,
-            y: self.y * other,
-            z: self.z * other,
-        }
-    }
-}
-
-impl std::ops::Mul<Vector3> for f64 {
-    type Output = Vector3;
-
-    fn mul(self, other: Vector3) -> Vector3 {
-        other * self
-    }
-}
-
-impl std::ops::MulAssign<f64> for Vector3 {
-    fn mul_assign(&mut self, other: f64) {
-        self.x *= other;
-        self.y *= other;
-        self.z *= other;
-    }
-}
-
-impl std::ops::Div<f64> for Vector3 {
-    type Output = Self;
-
-    fn div(self, other: f64) -> Self {
-        Self {
-            x: self.x / other,
-            y: self.y / other,
-            z: self.z / other,
-        }
-    }
-}
-
-impl std::ops::Div<Vector3> for f64 {
-    type Output = Vector3;
-
-    fn div(self, other: Vector3) -> Vector3 {
-        other / self
-    }
-}
-
-impl std::ops::DivAssign<f64> for Vector3 {
-    fn div_assign(&mut self, other: f64) {
-        self.x /= other;
-        self.y /= other;
-        self.z /= other;
-    }
-}
+impl_op_ex!(/=|lhs: &mut Vector3, rhs: f64| {
+        lhs.x /= rhs;
+        lhs.y /= rhs;
+        lhs.z /= rhs;
+});
 
 impl std::ops::Neg for Vector3 {
     type Output = Self;
