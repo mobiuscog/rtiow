@@ -45,7 +45,8 @@ impl Canvas {
         );
     }
 
-    pub fn set_pixel(&mut self, x: u32, y: u32, colour: Colour) {
-        self.image.set_pixel(x, y, colour.to_color());
+    pub fn set_pixel(&mut self, x: u32, y: u32, colour: Colour, samples_per_pixel: u32) {
+        self.image
+            .set_pixel(x, y, colour.to_color(samples_per_pixel));
     }
 }

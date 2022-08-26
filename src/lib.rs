@@ -1,3 +1,4 @@
+mod camera;
 mod canvas;
 mod ray;
 mod sphere;
@@ -6,7 +7,12 @@ mod vector3;
 #[macro_use]
 extern crate auto_ops;
 
+use ::rand::prelude::*;
+use camera::Camera;
 use macroquad::prelude::*;
+use num_cpus::get_physical;
+use std::sync::{Arc, Mutex};
+use std::thread;
 
 use canvas::Canvas;
 use ray::Ray;
@@ -14,40 +20,53 @@ use sphere::Sphere;
 use vector3::{Colour, Point3, Vector3};
 
 pub async fn run(aspect_ratio: f64) {
-    let viewport_height = 2.0;
-    let viewport_width = aspect_ratio * viewport_height;
-    let focal_length = 1.;
-
-    let origin: Point3 = Default::default();
-    let horizontal = Vector3::new(viewport_width, 0, 0);
-    let vertical = Vector3::new(0, viewport_height, 0);
-    let lower_left_corner =
-        origin - horizontal / 2 - vertical / 2 - Vector3::new(0, 0, focal_length);
-
-    let mut canvas = Canvas::new();
+    let canvas = Canvas::new();
+    let canvas_width = canvas.width();
+    let canvas_height = canvas.height();
+    let canvas_ref = Arc::new(Mutex::new(canvas));
 
     let mut world: Vec<Box<dyn Hittable>> = vec![];
     world.push(Box::new(Sphere::new(Point3::new(0, 0, -1), 0.5)));
     world.push(Box::new(Sphere::new(Point3::new(0, -100.5, -1), 100)));
-    // world.add(make_shared<sphere>(point3(0,-100.5,-1), 100));
+    let world_ref = Arc::new(world);
+
+    let camera = Camera::new(aspect_ratio);
+    let camera_ref = Arc::new(camera);
+
+    let cpu_cores = get_physical() as u32;
+    for thread_id in 0..cpu_cores {
+        let canvas_local = canvas_ref.clone();
+        let world_local = world_ref.clone();
+        let camera_local = camera_ref.clone();
+
+        let _ = thread::spawn(move || {
+            let mut rng = thread_rng();
+
+            let samples_per_pixel = 100u32;
+            for y in (0..=canvas_height - thread_id - 1)
+                .rev()
+                .step_by(cpu_cores as usize)
+            {
+                for x in 0..canvas_width {
+                    let mut pixel_colour = Colour::default();
+                    for _ in 0..samples_per_pixel {
+                        let u = (x as f64 + rng.gen::<f64>()) / (canvas_width - 1) as f64;
+                        let v = (y as f64 + rng.gen::<f64>()) / (canvas_height - 1) as f64;
+                        let ray = camera_local.get_ray(u, v);
+                        pixel_colour += ray.colour(&world_local.as_ref());
+                    }
+                    canvas_local
+                        .lock()
+                        .unwrap()
+                        .set_pixel(x, y, pixel_colour, samples_per_pixel);
+                }
+            }
+        });
+    }
 
     loop {
         clear_background(WHITE);
-        for y in (0..=canvas.height() - 1).rev() {
-            for x in 0..canvas.width() {
-                let u = x as f64 / (canvas.width() - 1) as f64;
-                let v = y as f64 / (canvas.height() - 1) as f64;
-                let r = Ray::new(
-                    origin,
-                    lower_left_corner + horizontal * u + vertical * v - origin,
-                );
-                let colour = r.colour(&world);
-                canvas.set_pixel(x, y, colour);
-            }
-        }
-
-        canvas.render();
-
+        canvas_ref.clone().lock().unwrap().render();
         next_frame().await
     }
 }
@@ -71,11 +90,11 @@ impl Hit {
     }
 }
 
-pub trait Hittable {
+pub trait Hittable: Send + Sync {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, rec: &mut Hit) -> bool;
 }
 
-impl Hittable for Vec<Box<dyn Hittable>> {
+impl Hittable for &Vec<Box<dyn Hittable>> {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, rec: &mut Hit) -> bool {
         let mut temp_rec: Hit = Default::default();
         let mut hit_anything = false;

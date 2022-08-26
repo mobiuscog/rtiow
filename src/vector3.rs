@@ -54,11 +54,12 @@ impl Vector3 {
         *self / self.length()
     }
 
-    pub fn to_color(&self) -> Color {
+    pub fn to_color(&self, samples_per_pixel: u32) -> Color {
+        let scale = 1. / samples_per_pixel as f64;
         Color::from_rgba(
-            (255.999 * self.x) as u8,
-            (255.999 * self.y) as u8,
-            (255.999 * self.z) as u8,
+            (255.999 * self.x * scale) as u8,
+            (255.999 * self.y * scale) as u8,
+            (255.999 * self.z * scale) as u8,
             255,
         )
     }

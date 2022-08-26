@@ -8,4 +8,6 @@ edition = "2021"
 [dependencies]
 auto_ops = "0.3.0"
 macroquad = "0.3.23"
+num_cpus = "1.13.1"
 num-traits = "0.2.15"
+rand = "0.8.5"
