@@ -1,7 +1,8 @@
+use ::rand::prelude::*;
 use macroquad::prelude::Color;
 use num_traits::NumCast;
 
-#[derive(Clone, Copy, Default)]
+#[derive(Clone, Copy)]
 pub struct Vector3 {
     x: f64,
     y: f64,
@@ -10,6 +11,16 @@ pub struct Vector3 {
 
 pub type Point3 = Vector3;
 pub type Colour = Vector3;
+
+impl Default for Vector3 {
+    fn default() -> Self {
+        Self {
+            x: 0.,
+            y: 0.,
+            z: 0.,
+        }
+    }
+}
 
 impl Vector3 {
     pub fn new<T: NumCast, U: NumCast, V: NumCast>(x: T, y: U, z: V) -> Self {
@@ -57,13 +68,43 @@ impl Vector3 {
     pub fn to_color(&self, samples_per_pixel: u32) -> Color {
         let scale = 1. / samples_per_pixel as f64;
         Color::from_rgba(
-            (255.999 * self.x * scale) as u8,
-            (255.999 * self.y * scale) as u8,
-            (255.999 * self.z * scale) as u8,
+            (255.999 * (self.x * scale).sqrt()) as u8,
+            (255.999 * (self.y * scale).sqrt()) as u8,
+            (255.999 * (self.z * scale).sqrt()) as u8,
             255,
         )
     }
+
+    pub fn random() -> Self {
+        let mut rng = thread_rng();
+        Self {
+            x: rng.gen::<f64>(),
+            y: rng.gen::<f64>(),
+            z: rng.gen::<f64>(),
+        }
+    }
+
+    pub fn random_range(min: f64, max: f64) -> Self {
+        let mut rng = thread_rng();
+        Self {
+            x: rng.gen_range(min..max),
+            y: rng.gen_range(min..max),
+            z: rng.gen_range(min..max),
+        }
+    }
+
+    pub fn random_in_unit_sphere() -> Self {
+        loop {
+            let p = Self::random_range(-1., 1.);
+            if p.length_squared() >= 1. {
+                continue;
+            }
+            return p;
+        }
+    }
 }
+
+// Below are the operator definitions
 
 impl_op_ex!(+|lhs: &Vector3, rhs: &Vector3| -> Vector3 {
     Vector3 {

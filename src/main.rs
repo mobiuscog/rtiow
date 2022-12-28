@@ -3,7 +3,7 @@ extern crate rtiow;
 use macroquad::prelude::*;
 
 pub const ASPECT_RATIO: f64 = 16. / 9.;
-const WINDOW_WIDTH: i32 = 800;
+const WINDOW_WIDTH: i32 = 1600;
 
 fn window_conf() -> Conf {
     let window_height = (WINDOW_WIDTH as f64 / ASPECT_RATIO) as i32;

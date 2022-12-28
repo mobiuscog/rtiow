@@ -22,10 +22,16 @@ impl Ray {
         self.origin + self.direction * t
     }
 
-    pub fn colour(&self, world: &dyn Hittable) -> Colour {
+    pub fn colour(&self, world: &dyn Hittable, depth: u8) -> Colour {
+        if depth <= 0 {
+            return Colour::default();
+        }
+
         let mut rec: Hit = Default::default();
-        if world.hit(self, 0., f64::INFINITY, &mut rec) {
-            return 0.5 * (rec.normal + Colour::new(1, 1, 1));
+
+        if world.hit(self, 0.0001, f64::INFINITY, &mut rec) {
+            let target = rec.p + rec.normal + Vector3::random_in_unit_sphere().unit_vector();
+            return 0.5 * Ray::new(rec.p, target - rec.p).colour(world, depth - 1);
         }
 
         let unit_direction = self.direction().unit_vector();

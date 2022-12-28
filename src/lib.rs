@@ -43,7 +43,9 @@ pub async fn run(aspect_ratio: f64) {
         let thread_handle = thread::spawn(move || {
             let mut rng = thread_rng();
 
-            let samples_per_pixel = 100u32;
+            let samples_per_pixel = 20u32;
+            let max_depth = 10u8;
+
             for y in (0..=canvas_height - thread_id - 1)
                 .rev()
                 .step_by(cpu_cores as usize)
@@ -54,7 +56,7 @@ pub async fn run(aspect_ratio: f64) {
                         let u = (x as f64 + rng.gen::<f64>()) / (canvas_width - 1) as f64;
                         let v = (y as f64 + rng.gen::<f64>()) / (canvas_height - 1) as f64;
                         let ray = camera_local.get_ray(u, v);
-                        pixel_colour += ray.colour(&world_local.as_ref());
+                        pixel_colour += ray.colour(&world_local.as_ref(), max_depth);
                     }
                     canvas_local
                         .lock()
