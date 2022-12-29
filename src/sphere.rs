@@ -1,5 +1,5 @@
 use crate::material::Material;
-use crate::{Hit, Hittable, Point3, Ray};
+use crate::{Boxable, Hit, Hittable, Point3, Ray};
 use num_traits::NumCast;
 use std::sync::Arc;
 
@@ -18,6 +18,8 @@ impl Sphere {
         }
     }
 }
+
+impl Boxable for Sphere {}
 
 impl Hittable for Sphere {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, rec: &mut Hit) -> bool {

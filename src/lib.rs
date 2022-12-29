@@ -22,6 +22,15 @@ use ray::Ray;
 use sphere::Sphere;
 use vector3::{Colour, Point3, Vector3};
 
+pub trait Boxable {
+    fn to_boxed(self) -> Box<Self>
+    where
+        Self: Sized,
+    {
+        Box::new(self)
+    }
+}
+
 pub async fn run(aspect_ratio: f64) {
     let canvas = Canvas::new();
     let canvas_width = canvas.width();
@@ -35,26 +44,10 @@ pub async fn run(aspect_ratio: f64) {
     let material_left = Metal::new(Colour::new(0.8, 0.8, 0.8));
     let material_right = Metal::new_blurred(Colour::new(0.8, 0.6, 0.2), 0.8);
 
-    world.push(Box::new(Sphere::new(
-        Point3::new(0, -100.5, -1),
-        100,
-        Arc::new(material_ground),
-    )));
-    world.push(Box::new(Sphere::new(
-        Point3::new(0, 0, -1),
-        0.5,
-        Arc::new(material_center),
-    )));
-    world.push(Box::new(Sphere::new(
-        Point3::new(-1, 0, -1),
-        0.5,
-        Arc::new(material_left),
-    )));
-    world.push(Box::new(Sphere::new(
-        Point3::new(1, 0, -1),
-        0.5,
-        Arc::new(material_right),
-    )));
+    world.push(Sphere::new(Point3::new(0, -100.5, -1), 100, Arc::new(material_ground)).to_boxed());
+    world.push(Sphere::new(Point3::new(0, 0, -1), 0.5, Arc::new(material_center)).to_boxed());
+    world.push(Sphere::new(Point3::new(-1, 0, -1), 0.5, Arc::new(material_left)).to_boxed());
+    world.push(Sphere::new(Point3::new(1, 0, -1), 0.5, Arc::new(material_right)).to_boxed());
 
     let world_ref = Arc::new(world);
 
