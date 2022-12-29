@@ -1,5 +1,6 @@
 mod camera;
 mod canvas;
+mod material;
 mod ray;
 mod sphere;
 mod vector3;
@@ -15,6 +16,7 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 
 use canvas::Canvas;
+use material::lambertian::Lambertian;
 use ray::Ray;
 use sphere::Sphere;
 use vector3::{Colour, Point3, Vector3};
@@ -26,8 +28,16 @@ pub async fn run(aspect_ratio: f64) {
     let canvas_ref = Arc::new(Mutex::new(canvas));
 
     let mut world: Vec<Box<dyn Hittable>> = vec![];
-    world.push(Box::new(Sphere::new(Point3::new(0, 0, -1), 0.5)));
-    world.push(Box::new(Sphere::new(Point3::new(0, -100.5, -1), 100)));
+    world.push(Box::new(Sphere::new(
+        Point3::new(0, 0, -1),
+        0.5,
+        Arc::new(Lambertian::new(Colour::new(0.5, 0.5, 0.5))),
+    )));
+    world.push(Box::new(Sphere::new(
+        Point3::new(0, -100.5, -1),
+        100,
+        Arc::new(Lambertian::new(Colour::new(0.5, 0.5, 0.5))),
+    )));
     let world_ref = Arc::new(world);
 
     let camera = Camera::new(aspect_ratio);
@@ -107,12 +117,25 @@ pub async fn run(aspect_ratio: f64) {
     }
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone)]
 pub struct Hit {
     p: Point3,
     normal: Vector3,
+    material: Option<Arc<dyn material::Material>>,
     t: f64,
     front_face: bool,
+}
+
+impl Default for Hit {
+    fn default() -> Self {
+        Self {
+            p: Point3::default(),
+            normal: Vector3::default(),
+            material: None,
+            t: 0.,
+            front_face: true,
+        }
+    }
 }
 
 impl Hit {

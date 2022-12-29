@@ -102,6 +102,12 @@ impl Vector3 {
             return p;
         }
     }
+
+    pub fn near_zero(&self) -> bool {
+        // Return true if the vector is close to zero in all dimensions.
+        const S: f64 = 1e-8;
+        (self.x.abs() < S) && (self.y.abs() < S) && (self.z.abs() < S)
+    }
 }
 
 // Below are the operator definitions
@@ -132,6 +138,20 @@ impl_op_ex!( -= |lhs: &mut Vector3, rhs: &Vector3| {
         lhs.x -= rhs.x;
         lhs.y -= rhs.y;
         lhs.z -= rhs.z;
+});
+
+impl_op_ex!(*|lhs: &Vector3, rhs: &Vector3| -> Vector3 {
+    Vector3 {
+        x: lhs.x * rhs.x,
+        y: lhs.y * rhs.y,
+        z: lhs.z * rhs.z,
+    }
+});
+
+impl_op_ex!(*=|lhs: &mut Vector3, rhs: &Vector3| {
+        lhs.x *= rhs.x;
+        lhs.y *= rhs.y;
+        lhs.z *= rhs.z;
 });
 
 impl_op_ex_commutative!(*|lhs: &Vector3, rhs: f64| -> Vector3 {

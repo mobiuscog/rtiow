@@ -1,5 +1,7 @@
+use crate::material::ScatterResult;
 use crate::{Colour, Hit, Hittable, Point3, Vector3};
 
+#[derive(Default)]
 pub struct Ray {
     origin: Point3,
     direction: Vector3,
@@ -8,6 +10,12 @@ pub struct Ray {
 impl Ray {
     pub fn new(origin: Point3, direction: Vector3) -> Self {
         Self { origin, direction }
+    }
+
+    pub fn update(&mut self, origin: Point3, direction: Vector3) -> &mut Ray {
+        self.origin = origin;
+        self.direction = direction;
+        self
     }
 
     pub fn origin(&self) -> Point3 {
@@ -29,9 +37,20 @@ impl Ray {
 
         let mut rec: Hit = Default::default();
 
-        if world.hit(self, 0.0001, f64::INFINITY, &mut rec) {
-            let target = rec.p + rec.normal + Vector3::random_in_unit_sphere().unit_vector();
-            return 0.5 * Ray::new(rec.p, target - rec.p).colour(world, depth - 1);
+        if world.hit(&self, 0.0001, f64::INFINITY, &mut rec) {
+            return match &rec.material.as_ref().unwrap().scatter(&self, &rec) {
+                ScatterResult::SCATTERED {
+                    attenuation,
+                    scattered,
+                } => attenuation * scattered.colour(world, depth - 1),
+                ScatterResult::ABSORBED {
+                    attenuation: _attenuation,
+                    scattered: _scattered,
+                } => Colour::default(),
+            };
+
+            // let target = rec.p + rec.normal + Vector3::random_in_unit_sphere().unit_vector();
+            // return 0.5 * Ray::new(rec.p, target - rec.p).colour(world, depth - 1);
         }
 
         let unit_direction = self.direction().unit_vector();

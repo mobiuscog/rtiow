@@ -1,17 +1,20 @@
+use crate::material::Material;
 use crate::{Hit, Hittable, Point3, Ray};
 use num_traits::NumCast;
+use std::sync::Arc;
 
-#[derive(Default)]
 pub struct Sphere {
     center: Point3,
     radius: f64,
+    material: Option<Arc<dyn Material>>,
 }
 
 impl Sphere {
-    pub fn new<T: NumCast>(center: Point3, radius: T) -> Self {
+    pub fn new<T: NumCast>(center: Point3, radius: T, material: Arc<dyn Material>) -> Self {
         Self {
             center,
             radius: radius.to_f64().unwrap(),
+            material: Some(material),
         }
     }
 }
@@ -42,6 +45,9 @@ impl Hittable for Sphere {
             rec.p = ray.at(rec.t);
             let outward_normal = (rec.p - self.center) / self.radius;
             rec.set_face_normal(&ray, &outward_normal);
+            if let Some(material) = &self.material {
+                rec.material = Some(material.clone())
+            }
             true
         };
     }
