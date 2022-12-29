@@ -53,7 +53,7 @@ impl Vector3 {
         self.x * other.x + self.y * other.y + self.z * other.z
     }
 
-    pub fn cross(&self, other: Self) -> Self {
+    pub fn cross(&self, other: &Self) -> Self {
         Self {
             x: self.y * other.z - self.z * other.y,
             y: self.z * other.x - self.x * other.z,
@@ -107,6 +107,10 @@ impl Vector3 {
         // Return true if the vector is close to zero in all dimensions.
         const S: f64 = 1e-8;
         (self.x.abs() < S) && (self.y.abs() < S) && (self.z.abs() < S)
+    }
+
+    pub fn reflect(&self, normal: &Vector3) -> Self {
+        self - (2. * self.dot(normal)) * normal
     }
 }
 

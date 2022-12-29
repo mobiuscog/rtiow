@@ -15,6 +15,7 @@ use num_cpus::get_physical;
 use std::sync::{Arc, Mutex};
 use std::thread;
 
+use crate::material::metal::Metal;
 use canvas::Canvas;
 use material::lambertian::Lambertian;
 use ray::Ray;
@@ -28,16 +29,33 @@ pub async fn run(aspect_ratio: f64) {
     let canvas_ref = Arc::new(Mutex::new(canvas));
 
     let mut world: Vec<Box<dyn Hittable>> = vec![];
-    world.push(Box::new(Sphere::new(
-        Point3::new(0, 0, -1),
-        0.5,
-        Arc::new(Lambertian::new(Colour::new(0.5, 0.5, 0.5))),
-    )));
+
+    let material_ground = Lambertian::new(Colour::new(0.8, 0.8, 0.));
+    let material_center = Lambertian::new(Colour::new(0.7, 0.3, 0.3));
+    let material_left = Metal::new(Colour::new(0.8, 0.8, 0.8));
+    let material_right = Metal::new(Colour::new(0.8, 0.6, 0.2));
+
     world.push(Box::new(Sphere::new(
         Point3::new(0, -100.5, -1),
         100,
-        Arc::new(Lambertian::new(Colour::new(0.5, 0.5, 0.5))),
+        Arc::new(material_ground),
     )));
+    world.push(Box::new(Sphere::new(
+        Point3::new(0, 0, -1),
+        0.5,
+        Arc::new(material_center),
+    )));
+    world.push(Box::new(Sphere::new(
+        Point3::new(-1, 0, -1),
+        0.5,
+        Arc::new(material_left),
+    )));
+    world.push(Box::new(Sphere::new(
+        Point3::new(1, 0, -1),
+        0.5,
+        Arc::new(material_right),
+    )));
+
     let world_ref = Arc::new(world);
 
     let camera = Camera::new(aspect_ratio);

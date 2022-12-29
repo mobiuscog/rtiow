@@ -1,6 +1,7 @@
 use crate::{Colour, Hit, Ray};
 
 pub mod lambertian;
+pub mod metal;
 
 pub enum ScatterResult {
     ABSORBED {
