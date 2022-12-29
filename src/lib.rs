@@ -33,7 +33,7 @@ pub async fn run(aspect_ratio: f64) {
     let material_ground = Lambertian::new(Colour::new(0.8, 0.8, 0.));
     let material_center = Lambertian::new(Colour::new(0.7, 0.3, 0.3));
     let material_left = Metal::new(Colour::new(0.8, 0.8, 0.8));
-    let material_right = Metal::new(Colour::new(0.8, 0.6, 0.2));
+    let material_right = Metal::new_blurred(Colour::new(0.8, 0.6, 0.2), 0.8);
 
     world.push(Box::new(Sphere::new(
         Point3::new(0, -100.5, -1),
