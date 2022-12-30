@@ -1,5 +1,7 @@
-use crate::material::ScatterResult::{ABSORBED, SCATTERED};
-use crate::material::{Material, ScatterResult};
+use crate::material::{
+    Material,
+    ScatterResult::{self, ABSORBED, SCATTERED},
+};
 use crate::ray::Ray;
 use crate::vector3::{Colour, Vector3};
 use crate::Hit;
@@ -15,6 +17,7 @@ impl Metal {
         Self { albedo, blur: 0. }
     }
 
+    #[allow(dead_code)]
     pub fn new_blurred(albedo: Colour, blur: f64) -> Self {
         let blurred = blur.clamp(0., 1.);
         Self {

@@ -1,5 +1,7 @@
-use crate::material::ScatterResult::SCATTERED;
-use crate::material::{Material, ScatterResult};
+use crate::material::{
+    Material,
+    ScatterResult::{self, SCATTERED},
+};
 use crate::ray::Ray;
 use crate::vector3::{Colour, Vector3};
 use crate::Hit;

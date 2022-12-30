@@ -1,3 +1,6 @@
+use std::sync::{Arc, Mutex};
+use std::thread;
+
 mod camera;
 mod canvas;
 mod material;
@@ -5,22 +8,19 @@ mod ray;
 mod sphere;
 mod vector3;
 
+use crate::camera::Camera;
+use crate::canvas::Canvas;
+use crate::material::{dielectric::Dielectric, lambertian::Lambertian, metal::Metal};
+use crate::ray::Ray;
+use crate::sphere::Sphere;
+use crate::vector3::{Colour, Point3, Vector3};
+
 #[macro_use]
 extern crate auto_ops;
 
 use ::rand::prelude::*;
-use camera::Camera;
 use macroquad::prelude::*;
 use num_cpus::get_physical;
-use std::sync::{Arc, Mutex};
-use std::thread;
-
-use crate::material::metal::Metal;
-use canvas::Canvas;
-use material::lambertian::Lambertian;
-use ray::Ray;
-use sphere::Sphere;
-use vector3::{Colour, Point3, Vector3};
 
 pub trait Boxable {
     fn to_boxed(self) -> Box<Self>
@@ -39,15 +39,16 @@ pub async fn run(aspect_ratio: f64) {
 
     let mut world: Vec<Box<dyn Hittable>> = vec![];
 
-    let material_ground = Lambertian::new(Colour::new(0.8, 0.8, 0.));
-    let material_center = Lambertian::new(Colour::new(0.7, 0.3, 0.3));
-    let material_left = Metal::new(Colour::new(0.8, 0.8, 0.8));
-    let material_right = Metal::new_blurred(Colour::new(0.8, 0.6, 0.2), 0.8);
+    let material_ground = Arc::new(Lambertian::new(Colour::new(0.8, 0.8, 0.)));
+    let material_center = Arc::new(Lambertian::new(Colour::new(0.1, 0.2, 0.5)));
+    let material_left = Arc::new(Dielectric::new(1.5));
+    let material_right = Arc::new(Metal::new(Colour::new(0.8, 0.6, 0.2)));
 
-    world.push(Sphere::new(Point3::new(0, -100.5, -1), 100, Arc::new(material_ground)).to_boxed());
-    world.push(Sphere::new(Point3::new(0, 0, -1), 0.5, Arc::new(material_center)).to_boxed());
-    world.push(Sphere::new(Point3::new(-1, 0, -1), 0.5, Arc::new(material_left)).to_boxed());
-    world.push(Sphere::new(Point3::new(1, 0, -1), 0.5, Arc::new(material_right)).to_boxed());
+    world.push(Sphere::new(Point3::new(0, -100.5, -1), 100, material_ground.clone()).to_boxed());
+    world.push(Sphere::new(Point3::new(0, 0, -1), 0.5, material_center.clone()).to_boxed());
+    world.push(Sphere::new(Point3::new(-1, 0, -1), 0.5, material_left.clone()).to_boxed());
+    world.push(Sphere::new(Point3::new(-1, 0, -1), -0.4, material_left.clone()).to_boxed());
+    world.push(Sphere::new(Point3::new(1, 0, -1), 0.5, material_right.clone()).to_boxed());
 
     let world_ref = Arc::new(world);
 

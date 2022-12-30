@@ -1,5 +1,6 @@
 use crate::material::Material;
 use crate::{Boxable, Hit, Hittable, Point3, Ray};
+
 use num_traits::NumCast;
 use std::sync::Arc;
 

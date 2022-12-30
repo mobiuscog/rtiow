@@ -1,4 +1,5 @@
 use crate::vector3::Colour;
+
 use macroquad::prelude::*;
 
 pub struct Canvas {
