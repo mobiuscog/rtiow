@@ -52,12 +52,20 @@ pub async fn run(aspect_ratio: f64) {
 
     let world_ref = Arc::new(world);
 
+    let look_from = Point3::new(3, 3, 2);
+    let look_at = Point3::new(0, 0, -1);
+    let up_vector = Vector3::new(0, 1, 0);
+    let dist_to_focus = (look_from - look_at).length();
+    let aperture = 2.0;
+
     let camera = Camera::new(
-        Point3::new(-2, 2, 1),
-        Point3::new(0, 0, -1),
-        Vector3::new(0, 1, 0),
+        look_from,
+        look_at,
+        up_vector,
         20,
         aspect_ratio,
+        aperture,
+        dist_to_focus,
     );
     let camera_ref = Arc::new(camera);
 

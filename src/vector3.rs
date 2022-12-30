@@ -103,6 +103,17 @@ impl Vector3 {
         }
     }
 
+    pub fn random_in_unit_disk() -> Self {
+        loop {
+            let mut rng = thread_rng();
+            let p = Vector3::new(rng.gen_range(-1. ..1.), rng.gen_range(-1. ..1.), 0);
+            if p.length_squared() >= 1. {
+                continue;
+            }
+            return p;
+        }
+    }
+
     pub fn near_zero(&self) -> bool {
         // Return true if the vector is close to zero in all dimensions.
         const S: f64 = 1e-8;
