@@ -1,5 +1,4 @@
-use crate::material::ScatterResult;
-use crate::{Colour, Hit, Hittable, Point3, Vector3};
+use crate::prelude::*;
 
 #[derive(Default)]
 pub struct Ray {
@@ -10,12 +9,6 @@ pub struct Ray {
 impl Ray {
     pub fn new(origin: Point3, direction: Vector3) -> Self {
         Self { origin, direction }
-    }
-
-    pub fn update(&mut self, origin: Point3, direction: Vector3) -> &mut Ray {
-        self.origin = origin;
-        self.direction = direction;
-        self
     }
 
     pub fn origin(&self) -> Point3 {

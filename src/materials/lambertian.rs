@@ -1,10 +1,4 @@
-use crate::material::{
-    Material,
-    ScatterResult::{self, SCATTERED},
-};
-use crate::ray::Ray;
-use crate::vector3::{Colour, Vector3};
-use crate::Hit;
+use crate::prelude::*;
 
 #[derive(Default)]
 pub struct Lambertian {

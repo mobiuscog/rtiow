@@ -1,9 +1,6 @@
 use std::sync::Arc;
 
-use crate::material::{dielectric::Dielectric, lambertian::Lambertian, metal::Metal};
-use crate::sphere::Sphere;
-use crate::vector3::{Colour, Point3};
-use crate::{Boxable, Hittable};
+use crate::prelude::*;
 
 use rand::{prelude::StdRng, Rng, SeedableRng};
 

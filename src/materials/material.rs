@@ -1,8 +1,4 @@
-use crate::{Colour, Hit, Ray};
-
-pub mod dielectric;
-pub mod lambertian;
-pub mod metal;
+use crate::prelude::*;
 
 pub enum ScatterResult {
     ABSORBED {

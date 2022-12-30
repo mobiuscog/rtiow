@@ -1,4 +1,5 @@
-use crate::{Point3, Ray, Vector3};
+use crate::prelude::*;
+
 use num_traits::NumCast;
 
 pub struct Camera {

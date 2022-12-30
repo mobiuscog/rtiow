@@ -1,4 +1,4 @@
-use crate::vector3::Colour;
+use crate::prelude::*;
 
 use macroquad::prelude::*;
 

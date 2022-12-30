@@ -1,10 +1,4 @@
-use crate::material::{
-    Material,
-    ScatterResult::{self, SCATTERED},
-};
-use crate::ray::Ray;
-use crate::vector3::Colour;
-use crate::Hit;
+use crate::prelude::*;
 
 use num_traits::Pow;
 use rand::{thread_rng, Rng};
