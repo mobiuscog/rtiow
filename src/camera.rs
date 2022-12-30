@@ -1,4 +1,5 @@
 use crate::{Point3, Ray, Vector3};
+use num_traits::NumCast;
 
 pub struct Camera {
     origin: Point3,
@@ -8,16 +9,27 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new(aspect_ratio: f64) -> Camera {
-        let viewport_height = 2.0;
-        let viewport_width = aspect_ratio * viewport_height;
-        let focal_length = 1.;
+    pub fn new<T: NumCast>(
+        look_from: Point3,
+        look_at: Point3,
+        up_vector: Vector3,
+        v_fov: T,
+        aspect_ratio: f64,
+    ) -> Camera {
+        let theta = v_fov.to_f64().unwrap().to_radians();
+        let h = (theta / 2.).tan();
 
-        let origin: Point3 = Default::default();
-        let horizontal = Vector3::new(viewport_width, 0, 0);
-        let vertical = Vector3::new(0, viewport_height, 0);
-        let lower_left_corner =
-            origin - horizontal / 2 - vertical / 2 - Vector3::new(0, 0, focal_length);
+        let viewport_height = 2.0 * h;
+        let viewport_width = aspect_ratio * viewport_height;
+
+        let w = (look_from - look_at).unit_vector();
+        let u = up_vector.cross(&w).unit_vector();
+        let v = w.cross(&u);
+
+        let origin: Point3 = look_from;
+        let horizontal = viewport_width * u;
+        let vertical = viewport_height * v;
+        let lower_left_corner = origin - horizontal / 2 - vertical / 2 - w;
 
         Camera {
             origin,

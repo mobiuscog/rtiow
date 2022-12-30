@@ -47,12 +47,18 @@ pub async fn run(aspect_ratio: f64) {
     world.push(Sphere::new(Point3::new(0, -100.5, -1), 100, material_ground.clone()).to_boxed());
     world.push(Sphere::new(Point3::new(0, 0, -1), 0.5, material_center.clone()).to_boxed());
     world.push(Sphere::new(Point3::new(-1, 0, -1), 0.5, material_left.clone()).to_boxed());
-    world.push(Sphere::new(Point3::new(-1, 0, -1), -0.4, material_left.clone()).to_boxed());
+    world.push(Sphere::new(Point3::new(-1, 0, -1), -0.45, material_left.clone()).to_boxed());
     world.push(Sphere::new(Point3::new(1, 0, -1), 0.5, material_right.clone()).to_boxed());
 
     let world_ref = Arc::new(world);
 
-    let camera = Camera::new(aspect_ratio);
+    let camera = Camera::new(
+        Point3::new(-2, 2, 1),
+        Point3::new(0, 0, -1),
+        Vector3::new(0, 1, 0),
+        20,
+        aspect_ratio,
+    );
     let camera_ref = Arc::new(camera);
 
     let cpu_cores = get_physical() as u32;
