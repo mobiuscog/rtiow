@@ -5,14 +5,13 @@ mod camera;
 mod canvas;
 mod material;
 mod ray;
+mod scene;
 mod sphere;
 mod vector3;
 
 use crate::camera::Camera;
 use crate::canvas::Canvas;
-use crate::material::{dielectric::Dielectric, lambertian::Lambertian, metal::Metal};
 use crate::ray::Ray;
-use crate::sphere::Sphere;
 use crate::vector3::{Colour, Point3, Vector3};
 
 #[macro_use]
@@ -32,31 +31,17 @@ pub trait Boxable {
 }
 
 pub async fn run(aspect_ratio: f64) {
-    let canvas = Canvas::new();
+    let canvas = Canvas::default();
     let canvas_width = canvas.width();
     let canvas_height = canvas.height();
     let canvas_ref = Arc::new(Mutex::new(canvas));
+    let world_ref = Arc::new(scene::build_cover());
 
-    let mut world: Vec<Box<dyn Hittable>> = vec![];
-
-    let material_ground = Arc::new(Lambertian::new(Colour::new(0.8, 0.8, 0.)));
-    let material_center = Arc::new(Lambertian::new(Colour::new(0.1, 0.2, 0.5)));
-    let material_left = Arc::new(Dielectric::new(1.5));
-    let material_right = Arc::new(Metal::new(Colour::new(0.8, 0.6, 0.2)));
-
-    world.push(Sphere::new(Point3::new(0, -100.5, -1), 100, material_ground.clone()).to_boxed());
-    world.push(Sphere::new(Point3::new(0, 0, -1), 0.5, material_center.clone()).to_boxed());
-    world.push(Sphere::new(Point3::new(-1, 0, -1), 0.5, material_left.clone()).to_boxed());
-    world.push(Sphere::new(Point3::new(-1, 0, -1), -0.45, material_left.clone()).to_boxed());
-    world.push(Sphere::new(Point3::new(1, 0, -1), 0.5, material_right.clone()).to_boxed());
-
-    let world_ref = Arc::new(world);
-
-    let look_from = Point3::new(3, 3, 2);
-    let look_at = Point3::new(0, 0, -1);
+    let look_from = Point3::new(13, 2, 3);
+    let look_at = Point3::new(0, 0, 0);
     let up_vector = Vector3::new(0, 1, 0);
-    let dist_to_focus = (look_from - look_at).length();
-    let aperture = 2.0;
+    let dist_to_focus = 10.;
+    let aperture = 0.1;
 
     let camera = Camera::new(
         look_from,
@@ -80,7 +65,7 @@ pub async fn run(aspect_ratio: f64) {
             let mut rng = thread_rng();
 
             let samples_per_pixel = 20u32;
-            let max_depth = 10u8;
+            let max_depth = 50u8;
 
             for y in (0..=canvas_height - thread_id - 1)
                 .rev()

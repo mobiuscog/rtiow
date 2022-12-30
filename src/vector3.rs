@@ -75,6 +75,13 @@ impl Vector3 {
         )
     }
 
+    pub fn subtract(&mut self, x: f64, y: f64, z: f64) -> &mut Self {
+        self.x -= x;
+        self.y -= y;
+        self.z -= z;
+        self
+    }
+
     pub fn random() -> Self {
         let mut rng = thread_rng();
         Self {
@@ -84,8 +91,24 @@ impl Vector3 {
         }
     }
 
+    pub fn random_from_rng(rng: &mut StdRng) -> Self {
+        Self {
+            x: rng.gen::<f64>(),
+            y: rng.gen::<f64>(),
+            z: rng.gen::<f64>(),
+        }
+    }
+
     pub fn random_range(min: f64, max: f64) -> Self {
         let mut rng = thread_rng();
+        Self {
+            x: rng.gen_range(min..max),
+            y: rng.gen_range(min..max),
+            z: rng.gen_range(min..max),
+        }
+    }
+
+    pub fn random_range_from_rng(rng: &mut StdRng, min: f64, max: f64) -> Self {
         Self {
             x: rng.gen_range(min..max),
             y: rng.gen_range(min..max),

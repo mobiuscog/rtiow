@@ -9,10 +9,14 @@ pub struct Canvas {
     texture: Texture2D,
 }
 
+impl Default for Canvas {
+    fn default() -> Self {
+        Self::new(screen_width() as u32, screen_height() as u32)
+    }
+}
+
 impl Canvas {
-    pub fn new() -> Canvas {
-        let width = screen_width() as u32;
-        let height = screen_height() as u32;
+    pub fn new(width: u32, height: u32) -> Canvas {
         let image = Image::gen_image_color(width as u16, height as u16, BLACK);
         let texture = Texture2D::from_image(&image);
 
