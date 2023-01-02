@@ -61,7 +61,7 @@ pub async fn run(aspect_ratio: f64) {
                     }
                     canvas_local
                         .lock()
-                        .unwrap()
+                        .expect("Something went wrong inside the canvas lock")
                         .set_pixel(x, y, pixel_colour, samples_per_pixel);
                 }
             }
@@ -78,7 +78,10 @@ pub async fn run(aspect_ratio: f64) {
     let mut threads_running = true;
     loop {
         clear_background(WHITE);
-        canvas_ref.lock().unwrap().render();
+        canvas_ref
+            .lock()
+            .expect("Something went wrong inside the canvas lock")
+            .render();
         if threads_running {
             draw_rectangle(
                 text_x - 8.,
@@ -92,10 +95,10 @@ pub async fn run(aspect_ratio: f64) {
         next_frame().await;
         if threads_running {
             let mut active_count = 0;
-            for thread_handle in launched_threads.iter_mut() {
-                if thread_handle.1 {
-                    if thread_handle.0.is_finished() {
-                        thread_handle.1 = false
+            for (thread_handle, is_running) in launched_threads.iter_mut() {
+                if *is_running {
+                    if thread_handle.is_finished() {
+                        *is_running = false
                     } else {
                         active_count += 1;
                     }

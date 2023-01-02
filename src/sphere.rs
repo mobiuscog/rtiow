@@ -13,7 +13,7 @@ impl Sphere {
     pub fn new<T: NumCast>(center: Point3, radius: T, material: Arc<dyn Material>) -> Self {
         Self {
             center,
-            radius: radius.to_f64().unwrap(),
+            radius: radius.to_f64().unwrap_or_default(),
             material: Some(material),
         }
     }
@@ -29,7 +29,7 @@ impl Hittable for Sphere {
         let c = oc.length_squared() - self.radius * self.radius;
         let discriminant = half_b * half_b - a * c;
 
-        return if discriminant < 0. {
+        if discriminant < 0. {
             false
         } else {
             let sqrtd = discriminant.sqrt();
@@ -46,11 +46,11 @@ impl Hittable for Sphere {
             rec.t = root;
             rec.p = ray.at(rec.t);
             let outward_normal = (rec.p - self.center) / self.radius;
-            rec.set_face_normal(&ray, &outward_normal);
+            rec.set_face_normal(ray, &outward_normal);
             if let Some(material) = &self.material {
                 rec.material = Some(material.clone())
             }
             true
-        };
+        }
     }
 }

@@ -52,6 +52,6 @@ impl Hittable for &Vec<Box<dyn Hittable>> {
             }
         }
 
-        return hit_anything;
+        hit_anything
     }
 }

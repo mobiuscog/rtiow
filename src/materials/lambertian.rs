@@ -18,7 +18,7 @@ impl Material for Lambertian {
         if scatter_direction.near_zero() {
             scatter_direction = rec.normal;
         }
-        SCATTERED {
+        Scattered {
             attenuation: self.albedo,
             scattered: Ray::new(rec.p, scatter_direction),
         }

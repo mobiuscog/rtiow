@@ -43,7 +43,7 @@ impl Material for Dielectric {
             false => unit_direction.refract(&rec.normal, refraction_ratio),
         };
 
-        SCATTERED {
+        Scattered {
             attenuation: Colour::new(1., 1., 1.),
             scattered: Ray::new(rec.p, direction),
         }

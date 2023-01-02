@@ -25,14 +25,14 @@ impl Material for Metal {
     fn scatter(&self, ray: &Ray, rec: &Hit) -> ScatterResult {
         let reflection_direction = ray.direction().unit_vector().reflect(&rec.normal);
         match reflection_direction.dot(&rec.normal) > 0. {
-            true => SCATTERED {
+            true => Scattered {
                 attenuation: self.albedo,
                 scattered: Ray::new(
                     rec.p,
                     reflection_direction + (Vector3::random_in_unit_sphere() * self.blur),
                 ),
             },
-            false => ABSORBED {
+            false => Absorbed {
                 attenuation: None,
                 scattered: None,
             },

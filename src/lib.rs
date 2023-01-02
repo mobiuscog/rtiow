@@ -14,7 +14,7 @@ mod prelude {
         lambertian::Lambertian,
         material::{
             Material,
-            ScatterResult::{self, ABSORBED, SCATTERED},
+            ScatterResult::{self, Absorbed, Scattered},
         },
         metal::Metal,
     };
@@ -33,7 +33,7 @@ pub use crate::renderer::run;
 extern crate auto_ops;
 
 pub trait Boxable {
-    fn to_boxed(self) -> Box<Self>
+    fn to_box(self) -> Box<Self>
     where
         Self: Sized,
     {

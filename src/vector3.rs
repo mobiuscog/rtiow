@@ -25,9 +25,9 @@ impl Default for Vector3 {
 impl Vector3 {
     pub fn new<T: NumCast, U: NumCast, V: NumCast>(x: T, y: U, z: V) -> Self {
         Self {
-            x: x.to_f64().unwrap(),
-            y: y.to_f64().unwrap(),
-            z: z.to_f64().unwrap(),
+            x: x.to_f64().unwrap_or_default(),
+            y: y.to_f64().unwrap_or_default(),
+            z: z.to_f64().unwrap_or_default(),
         }
     }
 
@@ -65,7 +65,7 @@ impl Vector3 {
         *self / self.length()
     }
 
-    pub fn to_color(&self, samples_per_pixel: u32) -> Color {
+    pub fn to_color(self, samples_per_pixel: u32) -> Color {
         let scale = 1. / samples_per_pixel as f64;
         Color::from_rgba(
             (255.999 * (self.x * scale).sqrt()) as u8,

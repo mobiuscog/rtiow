@@ -1,11 +1,11 @@
 use crate::prelude::*;
 
 pub enum ScatterResult {
-    ABSORBED {
+    Absorbed {
         attenuation: Option<Colour>,
         scattered: Option<Ray>,
     },
-    SCATTERED {
+    Scattered {
         attenuation: Colour,
         scattered: Ray,
     },

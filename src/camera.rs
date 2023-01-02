@@ -22,7 +22,7 @@ impl Camera {
         aperture: f64,
         focus_dist: f64,
     ) -> Camera {
-        let theta = v_fov.to_f64().unwrap().to_radians();
+        let theta = v_fov.to_f64().unwrap_or_default().to_radians();
         let h = (theta / 2.).tan();
 
         let viewport_height = 2.0 * h;
